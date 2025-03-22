@@ -1,0 +1,89 @@
+.top_wrapper{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin: auto;
+  max-width: 500px;
+  background-color: var(--foreground); 
+  padding: 30px;
+  border-radius: 30px;
+  color: var(--textcolor);
+
+  h1{
+    opacity: 0.3;
+    font-size: 15px;
+  }
+  h2{
+    margin: 40px 0 20px 0;
+  }
+}
+
+.top_question_choice{
+    // background-color: #faee34;
+    // color: #333;
+    // padding: 10px;
+    // margin-bottom: 10px;
+    // border-radius: 10px;
+
+    .radioItem {
+      display: flex;
+      align-items: center;
+      column-gap: 4px;
+      // width: fit-content;
+      line-height: 1;
+      cursor: pointer;
+
+      border: var(--textcolor) 2px solid;
+      border-radius: 20px;
+      padding: 10px;
+      margin-bottom: 10px;
+      opacity: 0.5;
+    }
+    .radioItem:has(input[type="radio"]:checked) { 
+      /* チェックされたラベルのスタイル */
+      border: #06b6d4 2px solid;
+      color: #06b6d4;
+      background-color: #06b6d430;
+      opacity: initial;
+    }
+    .radioItem:not(:last-of-type) {
+      margin-bottom: 16px;
+    }
+    
+    .radioButton {
+      appearance: none;
+      position: relative;
+      width: 20px;
+      height: 20px;
+      border: 1px solid #ccc;
+      border-radius: 9999px;
+      cursor: pointer;
+    }
+    
+    .radioButton:checked{
+      border: none;
+    }
+    .radioButton:checked::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      width: 20px;
+      height: 20px;
+      margin: auto;
+      border-radius: 9999px;
+      background-color: #06b6d4;
+    }
+}
+
+.top_sendButton{
+  color: #fff;
+  font-weight: bold;
+  margin-top: 50px;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 10px;
+  // background-image: linear-gradient(90deg, rgba(247, 93, 139, 1), rgba(254, 220, 64, 1));
+  background-image: linear-gradient(90deg, rgba(248, 15, 15, 1), rgba(207, 63, 245, 1));
+  border: none;
+  width: fit-content;
+}

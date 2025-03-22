@@ -2,6 +2,7 @@
 
 import { gql, useQuery, useMutation } from '@apollo/client';
 import { useState } from 'react';
+import styles from './top.module.scss';
 
 // GraphQL クエリ
 const GET_QUESTIONS = gql`
@@ -52,29 +53,27 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <div className={styles.top_wrapper}>
       <h1>Questions from NestJS GraphQL</h1>
-      <div>
+      <div className={styles.top_question}>
         <h2>{currentQuestion.question}</h2>
         <ul>
           {currentQuestion.choices.map((choice) => (
-            <li key={choice.id}>
-              <label>
+            <div key={choice.id} className={styles.top_question_choice}>
+              <label className={styles.radioItem}>
                 <input
                   type="radio"
                   name="choice"
+                  className={styles.radioButton}
                   value={choice.id}
                   onChange={() => setSelectedChoice(choice.id)}
                 />
                 {choice.choice}
               </label>
-            </li>
+            </div>
           ))}
         </ul>
       </div>
-      <button onClick={handleSubmit} disabled={!selectedChoice}>
-        回答を送信
-      </button>
       <div>
         <button
           onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
@@ -91,6 +90,9 @@ export default function Home() {
           Next
         </button>
       </div>
+      <button onClick={handleSubmit} disabled={!selectedChoice} className={styles.top_sendButton}>
+        回答を送信
+      </button>
     </div>
   );
 }
