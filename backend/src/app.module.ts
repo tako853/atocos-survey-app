@@ -4,9 +4,9 @@ import { AppService } from './app.service';
 import { GraphQLModule } from '@nestjs/graphql';
 import * as path from 'path';
 import { QuestionsModule } from './questions/questions.module';
+import { AnswersModule } from './answers/answers.module';
 import { Application } from 'express';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { QuestionsResolver } from './questions/question.resolvers';
 
 @Module({
   imports: [
@@ -14,7 +14,10 @@ import { QuestionsResolver } from './questions/question.resolvers';
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
+    QuestionsModule,
+    AnswersModule,
   ],
-  providers: [QuestionsResolver],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

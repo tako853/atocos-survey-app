@@ -1,57 +1,110 @@
 import { Mutation, Query, Resolver, Args, Int } from '@nestjs/graphql';
-import { Questions } from './questions.model';
-import { Answer } from '../answers/answers.model';
+import { Questions, Sheets } from './questions.model';
 
 @Resolver(() => Questions)
 export class QuestionsResolver {
-  private answers: Answer[] = []; // 仮のデータストア（DBを使う場合は後で変更）
+
+  // 仮のデータストア（DBを使う場合は後で変更）
+  private sheets: Sheets[] = [];
+  private questions: Questions[] = [];
+
+  // 32bit整数の範囲内でIDを生成するヘルパーメソッド
+  private generateId(): number {
+    return Math.floor(Math.random() * 2147483647); // 2^31 - 1
+  }
+
+  constructor() {
+    // デモ用の初期データを作成
+    this.initializeDemoData();
+  }
+
+  private initializeDemoData() {
+    const demoSheet = {
+      id: this.generateId(),
+      title: 'デモシート',
+    };
+    this.sheets.push(demoSheet);
+
+    const demoQuestions = [
+      {
+        question: 'きのことたけのこ、どっち派？',
+        choices: ['きのこ', 'たけのこ']
+      },
+      {
+        question: 'えびとかに、どっちが好き？',
+        choices: ['えび🦐', 'かに🦀']
+      },
+      {
+        question: '犬と猫、どっち派？',
+        choices: ['犬🐶', '猫🐱']
+      }
+    ];
+
+    demoQuestions.forEach(demo => {
+      const question = {
+        id: this.generateId(),
+        question: demo.question,
+        choices: demo.choices.map(choice => ({
+          id: this.generateId(),
+          choice: choice,
+        })),
+        sheet_id: demoSheet.id,
+      };
+      this.questions.push(question);
+    });
+  }
 
     @Query(() => [Questions], { name: 'questions' })
     async getQuestions(){
-        return [
-            {
-              id: '1',
-              question: 'きのことたけのこ、どっち派？',
-              choices: [
-                { id: '101', choice: 'きのこ' },
-                { id: '102', choice: 'たけのこ' },
-              ],
-            },
-            {
-              id: '2',
-              question: 'えびとかに、どっちが好き？',
-              choices: [
-                { id: '103', choice: 'えび🦐' },
-                { id: '104', choice: 'かに🦀' },
-              ],
-            },
-            {
-                id: '3',
-                question: '犬と猫、どっち派？',
-                choices: [
-                  { id: '105', choice: '犬🐶' },
-                  { id: '106', choice: '猫🐱' },
-                ],
-              },
-        ];
+        return this.questions;
     }
 
-    @Mutation(() => Answer, { name: 'submitAnswer' })
-    async submitAnswer(
-        @Args('questionId', { type: () => Int }) questionId: number,
-        @Args('choiceId', { type: () => Int }) choiceId: number
+
+    @Mutation(() => Sheets, { name: 'createSheet' })
+    async createSheet(
+        @Args('title', { type: () => String }) title: string
     ) {
-        const newAnswer = {
-        id: this.answers.length + 1,
-        questionId,
-        choiceId,
+        const newSheet = {
+            id: this.generateId(),
+            title,
         };
-        this.answers.push(newAnswer);
-        return newAnswer;
+        this.sheets.push(newSheet);
+        return newSheet;
     }
 
-    @Query(() => [Answer], { name: 'answers' })
-    async getAnswers() {
-        return this.answers;
+    @Mutation(() => Questions, { name: 'createQuestion' })
+    async createQuestion(
+        @Args('question', { type: () => String }) question: string,
+        @Args('choices', { type: () => [String] }) choices: string[],
+        @Args('sheet_id', { type: () => Int }) sheet_id: number
+    ) {
+        const newQuestion = {
+            id: this.generateId(),
+            question: question,
+            choices: choices.map((choice) => ({
+                id: this.generateId(),
+                choice: choice,
+            })),
+            sheet_id: sheet_id,
+        };
+        this.questions.push(newQuestion);
+        return newQuestion;
     }
+
+    @Mutation(() => Boolean, { name: 'deleteQuestion' })
+    async deleteQuestion(
+        @Args('id', { type: () => Int }) id: number
+    ) {
+        const initialLength = this.questions.length;
+        this.questions = this.questions.filter(q => q.id !== id);
+        return this.questions.length < initialLength;
+    }
+
+    @Query(() => Questions, { name: 'question', nullable: true })
+    async getQuestion(
+        @Args('id', { type: () => Int }) id: number
+    ) {
+        return this.questions.find(q => q.id === id) || null;
+    }
+
 }

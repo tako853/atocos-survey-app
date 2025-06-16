@@ -1,4 +1,4 @@
-import { Field, ObjectType, Int } from '@nestjs/graphql';
+import { Field, ObjectType, Int, InputType } from '@nestjs/graphql';
 
 @ObjectType()
 export class Choice {
@@ -19,4 +19,34 @@ export class Questions {
 
   @Field(() => [Choice])
   choices: Choice[];
+
+  @Field(() => Int)
+  sheet_id: number;
+}
+
+@ObjectType()
+export class Sheets {
+  @Field(() => Int)
+  id: number;
+
+  @Field(() => String)
+  title: string;
+}
+
+@InputType()
+export class CreateChoiceInput {
+  @Field(() => String)
+  choice: string;
+}
+
+@InputType()
+export class CreateQuestionInput {
+  @Field(() => String)
+  question: string;
+
+  @Field(() => [CreateChoiceInput])
+  choices: CreateChoiceInput[];
+
+  @Field(() => Int)
+  sheet_id: number;
 }

@@ -2,7 +2,7 @@ import { Mutation, Query, Resolver, Args, Int } from '@nestjs/graphql';
 import { Answer } from './answers.model';
 
 @Resolver(() => Answer)
-export class QuestionsResolver {
+export class AnswersResolver {
   private answers: Answer[] = []; // 仮のデータストア（DBを使う場合は後で変更）
 
   @Query(() => [Answer], { name: 'answers' })
