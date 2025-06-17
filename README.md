@@ -1,9 +1,10 @@
 # atocos-survey-app
 
 ## 使用技術
-[![My Skills](https://skillicons.dev/icons?i=nextjs,scss,nestjs,graphql,apollo,mysql)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=nextjs,typescript,scss,nestjs,graphql,apollo,mysql)](https://skillicons.dev)
 - Frontend
   - Next.js
+  - TypeScript
   - SCSS
 - Backend
   - NestJS
