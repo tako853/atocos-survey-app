@@ -1,29 +1,36 @@
 import { Mutation, Query, Resolver, Args, Int } from '@nestjs/graphql';
-import { Questions, Sheets } from './questions.model';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { OnModuleInit } from '@nestjs/common';
+import { Question } from './entities/question.entity';
+import { Choice } from './entities/choice.entity';
+import { Sheet } from './entities/sheet.entity';
 
-@Resolver(() => Questions)
-export class QuestionsResolver {
+@Resolver(() => Question)
+export class QuestionsResolver implements OnModuleInit {
+  constructor(
+    @InjectRepository(Question)
+    private questionRepository: Repository<Question>,
+    @InjectRepository(Choice)
+    private choiceRepository: Repository<Choice>,
+    @InjectRepository(Sheet)
+    private sheetRepository: Repository<Sheet>,
+  ) {}
 
-  // 仮のデータストア（DBを使う場合は後で変更）
-  private sheets: Sheets[] = [];
-  private questions: Questions[] = [];
-
-  // 32bit整数の範囲内でIDを生成するヘルパーメソッド
-  private generateId(): number {
-    return Math.floor(Math.random() * 2147483647); // 2^31 - 1
+  async onModuleInit() {
+    // 初期データの作成（テーブルが空の場合のみ）
+    await this.initializeDemoData();
   }
 
-  constructor() {
-    // デモ用の初期データを作成
-    this.initializeDemoData();
-  }
+  private async initializeDemoData() {
+    const existingQuestions = await this.questionRepository.count();
+    if (existingQuestions > 0) return; // 既にデータがある場合はスキップ
 
-  private initializeDemoData() {
-    const demoSheet = {
-      id: this.generateId(),
+    // デモシートを作成
+    const demoSheet = this.sheetRepository.create({
       title: 'デモシート',
-    };
-    this.sheets.push(demoSheet);
+    });
+    const savedSheet = await this.sheetRepository.save(demoSheet);
 
     const demoQuestions = [
       {
@@ -40,71 +47,139 @@ export class QuestionsResolver {
       }
     ];
 
-    demoQuestions.forEach(demo => {
-      const question = {
-        id: this.generateId(),
+    for (const demo of demoQuestions) {
+      const question = this.questionRepository.create({
         question: demo.question,
-        choices: demo.choices.map(choice => ({
-          id: this.generateId(),
-          choice: choice,
-        })),
-        sheet_id: demoSheet.id,
-      };
-      this.questions.push(question);
+        sheet_id: savedSheet.id,
+      });
+      const savedQuestion = await this.questionRepository.save(question);
+
+      for (const choiceText of demo.choices) {
+        const choice = this.choiceRepository.create({
+          choice: choiceText,
+          questionId: savedQuestion.id,
+        });
+        await this.choiceRepository.save(choice);
+      }
+    }
+  }
+
+  @Query(() => [Question], { name: 'questions' })
+  async getQuestions(): Promise<Question[]> {
+    return this.questionRepository.find({ relations: ['choices'] });
+  }
+
+  @Query(() => [Question], { name: 'questionsBySheet' })
+  async getQuestionsBySheet(
+    @Args('sheetId', { type: () => Int }) sheetId: number
+  ): Promise<Question[]> {
+    return this.questionRepository.find({
+      where: { sheet_id: sheetId },
+      relations: ['choices'],
+      order: { id: 'ASC' }
     });
   }
 
-    @Query(() => [Questions], { name: 'questions' })
-    async getQuestions(){
-        return this.questions;
+  @Query(() => [Sheet], { name: 'sheets' })
+  async getSheets(): Promise<Sheet[]> {
+    return this.sheetRepository.find({ relations: ['questions'] });
+  }
+
+  @Query(() => Question, { name: 'question', nullable: true })
+  async getQuestion(
+    @Args('id', { type: () => Int }) id: number
+  ): Promise<Question | null> {
+    return this.questionRepository.findOne({
+      where: { id },
+      relations: ['choices']
+    });
+  }
+
+  @Mutation(() => Sheet, { name: 'createSheet' })
+  async createSheet(
+    @Args('title', { type: () => String }) title: string
+  ): Promise<Sheet> {
+    const newSheet = this.sheetRepository.create({ title });
+    return this.sheetRepository.save(newSheet);
+  }
+
+  @Mutation(() => Question, { name: 'createQuestion' })
+  async createQuestion(
+    @Args('question', { type: () => String }) question: string,
+    @Args('choices', { type: () => [String] }) choices: string[],
+    @Args('sheetId', { type: () => Int, nullable: true }) sheetId?: number
+  ): Promise<Question> {
+    let targetSheet: Sheet;
+    
+    if (sheetId) {
+      const foundSheet = await this.sheetRepository.findOne({
+        where: { id: sheetId }
+      });
+      if (!foundSheet) {
+        throw new Error('指定されたシートが見つかりません');
+      }
+      targetSheet = foundSheet;
+    } else {
+      // デフォルトシートを取得または作成
+      const foundSheet = await this.sheetRepository.findOne({
+        where: { title: 'デモシート' }
+      });
+      
+      if (!foundSheet) {
+        targetSheet = this.sheetRepository.create({ title: 'デモシート' });
+        targetSheet = await this.sheetRepository.save(targetSheet);
+      } else {
+        targetSheet = foundSheet;
+      }
     }
 
+    // 質問を作成
+    const newQuestion = this.questionRepository.create({
+      question,
+      sheet_id: targetSheet.id,
+    });
+    const savedQuestion = await this.questionRepository.save(newQuestion);
 
-    @Mutation(() => Sheets, { name: 'createSheet' })
-    async createSheet(
-        @Args('title', { type: () => String }) title: string
-    ) {
-        const newSheet = {
-            id: this.generateId(),
-            title,
-        };
-        this.sheets.push(newSheet);
-        return newSheet;
-    }
+    // 選択肢を作成
+    const choiceEntities = choices.map(choiceText =>
+      this.choiceRepository.create({
+        choice: choiceText,
+        questionId: savedQuestion.id,
+      })
+    );
+    await this.choiceRepository.save(choiceEntities);
 
-    @Mutation(() => Questions, { name: 'createQuestion' })
-    async createQuestion(
-        @Args('question', { type: () => String }) question: string,
-        @Args('choices', { type: () => [String] }) choices: string[],
-        @Args('sheet_id', { type: () => Int }) sheet_id: number
-    ) {
-        const newQuestion = {
-            id: this.generateId(),
-            question: question,
-            choices: choices.map((choice) => ({
-                id: this.generateId(),
-                choice: choice,
-            })),
-            sheet_id: sheet_id,
-        };
-        this.questions.push(newQuestion);
-        return newQuestion;
-    }
+    // 選択肢を含めて質問を再取得
+    const questionWithChoices = await this.questionRepository.findOne({
+      where: { id: savedQuestion.id },
+      relations: ['choices']
+    });
+    return questionWithChoices!;
+  }
 
-    @Mutation(() => Boolean, { name: 'deleteQuestion' })
-    async deleteQuestion(
-        @Args('id', { type: () => Int }) id: number
-    ) {
-        const initialLength = this.questions.length;
-        this.questions = this.questions.filter(q => q.id !== id);
-        return this.questions.length < initialLength;
-    }
+  @Mutation(() => Boolean, { name: 'deleteQuestion' })
+  async deleteQuestion(
+    @Args('id', { type: () => Int }) id: number
+  ): Promise<boolean> {
+    const result = await this.questionRepository.delete(id);
+    return (result.affected ?? 0) > 0;
+  }
 
-    @Query(() => Questions, { name: 'question', nullable: true })
-    async getQuestion(
-        @Args('id', { type: () => Int }) id: number
-    ) {
-        return this.questions.find(q => q.id === id) || null;
+  @Mutation(() => Boolean, { name: 'deleteSheet' })
+  async deleteSheet(
+    @Args('id', { type: () => Int }) id: number
+  ): Promise<boolean> {
+    try {
+      // シートに属する質問を削除（CASCADE設定により選択肢も自動削除される）
+      await this.questionRepository.delete({ sheet_id: id });
+      
+      // シートを削除
+      const result = await this.sheetRepository.delete(id);
+      return (result.affected ?? 0) > 0;
+    } catch (error) {
+      console.error('Error deleting sheet:', error);
+      return false;
     }
+  }
 
 }

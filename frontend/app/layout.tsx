@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ApolloWrapper } from "./apolloWrapper";
+import { AuthProvider } from "./auth/context";
 
 export default function RootLayout({
   children,
@@ -10,7 +11,9 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
-        <ApolloWrapper>{children}</ApolloWrapper>
+        <AuthProvider>
+          <ApolloWrapper>{children}</ApolloWrapper>
+        </AuthProvider>
       </body>
     </html>
   );

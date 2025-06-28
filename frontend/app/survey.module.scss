@@ -1,0 +1,148 @@
+// 共通スタイル - アンケートアプリ全体で使用
+
+// ベースラッパー（全ページ共通レイアウト）
+.base_wrapper {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin: auto;
+  background-color: var(--foreground);
+  padding: 30px;
+  border-radius: 30px;
+  color: var(--textcolor);
+
+  &.size_small {
+    max-width: 500px;
+  }
+
+  &.size_medium {
+    max-width: 600px;
+  }
+
+  &.size_large {
+    max-width: 800px;
+  }
+
+  h1 {
+    opacity: 0.8;
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  h2 {
+    margin: 20px 0 15px 0;
+    font-size: 20px;
+  }
+}
+
+// 共通ボタンスタイル
+.button {
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  // プライマリボタン（メインアクション）
+  &.primary {
+    color: #fff;
+    background-image: linear-gradient(90deg, rgba(248, 15, 15, 1), rgba(207, 63, 245, 1));
+    padding: 12px 24px;
+    font-size: 16px;
+
+    &.large {
+      padding: 15px 30px;
+      border-radius: 20px;
+    }
+  }
+
+  // セカンダリボタン（サブアクション）
+  &.secondary {
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 16px;
+    font-size: 14px;
+
+    &:hover {
+      background-color: #545b62;
+    }
+  }
+
+  // 危険なアクション（削除など）
+  &.danger {
+    background-color: #dc3545;
+    color: white;
+    padding: 6px 12px;
+    font-size: 12px;
+
+    &:hover {
+      background-color: #c82333;
+    }
+  }
+
+  // 成功アクション（追加など）
+  &.success {
+    background-color: #28a745;
+    color: white;
+    padding: 6px 12px;
+    font-size: 12px;
+
+    &:hover {
+      background-color: #218838;
+    }
+  }
+}
+
+// 共通カードスタイル
+.card {
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin: 15px 0;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .card_title {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .card_content {
+    margin-bottom: 15px;
+    line-height: 1.4;
+  }
+}
+
+// 状態表示
+.loading, .error {
+  text-align: center;
+  padding: 40px 20px;
+
+  p {
+    font-size: 16px;
+    margin: 0;
+  }
+}
+
+.error p {
+  color: #dc3545;
+}

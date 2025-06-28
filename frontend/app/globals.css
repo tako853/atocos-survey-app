@@ -2,12 +2,14 @@
   --background: #ffffff;
   --foreground: #f1f1f1;
   --textcolor: #111;
+  --background_secondaly: #252c49; 
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #161b2c;
-    --foreground: ##252c49;
+    --foreground: #161b2c;
+    --card_background: #252c49; 
     --textcolor: #ddd;
   }
 }

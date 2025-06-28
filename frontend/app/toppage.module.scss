@@ -1,0 +1,197 @@
+// トップページ（質問一覧）専用スタイル
+.home_wrapper {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin: auto;
+  max-width: 600px;
+  background-color: var(--foreground);
+  padding: 30px;
+  border-radius: 30px;
+  color: var(--textcolor);
+
+  h1 {
+    opacity: 0.8;
+    font-size: 28px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .description {
+    text-align: center;
+    margin-bottom: 20px;
+    opacity: 0.7;
+    font-size: 16px;
+  }
+}
+
+// アンケートカード一覧
+.surveys_list {
+  .survey_card {
+    border: 2px solid #007bff;
+    padding: 25px;
+    margin: 20px 0;
+    border-radius: 16px;
+    background-color: rgba(0, 123, 255, 0.02);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 123, 255, 0.15);
+    }
+
+    .survey_header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(0, 123, 255, 0.2);
+
+      .survey_title {
+        margin: 0;
+        color: #007bff;
+        font-size: 22px;
+        font-weight: 700;
+        flex: 1;
+      }
+
+      .survey_meta {
+        .question_count {
+          background-color: #28a745;
+          color: white;
+          padding: 6px 12px;
+          border-radius: 20px;
+          font-size: 14px;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .questions_preview {
+      margin-bottom: 20px;
+
+      h4 {
+        margin: 0 0 10px 0;
+        font-size: 16px;
+        color: var(--textcolor);
+        opacity: 0.8;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+          padding: 5px 0;
+          font-size: 14px;
+          color: var(--textcolor);
+          opacity: 0.7;
+
+          &.more_questions {
+            font-style: italic;
+            color: #007bff;
+            opacity: 0.8;
+          }
+        }
+      }
+    }
+
+    .survey_actions {
+      text-align: center;
+
+      .start_survey_button {
+        color: #fff;
+        font-weight: bold;
+        border-radius: 12px;
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+        }
+      }
+
+      .no_questions {
+        color: #6c757d;
+        font-style: italic;
+        padding: 10px;
+      }
+    }
+  }
+}
+
+.no_surveys {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+
+  p {
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+
+  .create_survey_link {
+    color: #fff;
+    font-weight: bold;
+    border-radius: 8px;
+    padding: 12px 24px;
+    background-color: #007bff;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+}
+
+// 管理画面へのリンク
+.admin_link_section {
+  margin-top: 30px;
+  text-align: right;
+
+  .admin_button {
+    padding: 10px 20px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #545b62;
+    }
+  }
+}
+
+// ローディング・エラー状態
+.loading, .error {
+  text-align: center;
+  padding: 40px 20px;
+
+  p {
+    font-size: 16px;
+    margin: 0;
+  }
+}
+
+.error {
+  p {
+    color: #dc3545;
+  }
+}
