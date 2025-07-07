@@ -1,5 +1,8 @@
 {
   "dependencies": {
+    "@graphql-codegen/typed-document-node": "^5.1.2",
+    "@graphql-codegen/typescript": "^4.1.6",
+    "@graphql-codegen/typescript-operations": "^4.6.1",
     "@nestjs/graphql": "^9.1.2",
     "apollo-server-express": "^3.13.0",
     "graphql": "^15.10.1"

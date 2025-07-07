@@ -1,0 +1,60 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Choice {
+  id: Int!
+  choice: String!
+  questionId: Int!
+}
+
+type Sheet {
+  id: Int!
+  title: String!
+  questions: [Question!]!
+}
+
+type Question {
+  id: Int!
+  question: String!
+  choices: [Choice!]!
+  sheet_id: Int!
+}
+
+type Answer {
+  id: Int!
+  questionId: Int!
+  choiceId: Int!
+  createdAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type SubmitAnswersResponse {
+  success: Boolean!
+  message: String!
+}
+
+type Query {
+  questions: [Question!]!
+  questionsBySheet(sheetId: Int!): [Question!]!
+  sheets: [Sheet!]!
+  question(id: Int!): Question
+  answers: [Answer!]!
+}
+
+type Mutation {
+  createSheet(title: String!): Sheet!
+  createQuestion(question: String!, choices: [String!]!, sheetId: Int): Question!
+  deleteQuestion(id: Int!): Boolean!
+  deleteSheet(id: Int!): Boolean!
+  submitAnswers(answers: [AnswerInput!]!): SubmitAnswersResponse!
+}
+
+input AnswerInput {
+  questionId: Int!
+  choiceId: Int!
+}
