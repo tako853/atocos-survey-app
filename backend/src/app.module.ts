@@ -9,6 +9,8 @@ import { QuestionsModule } from './questions/questions.module';
 import { AnswersModule } from './answers/answers.module';
 import { Application } from 'express';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
     }),
     QuestionsModule,
     AnswersModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
